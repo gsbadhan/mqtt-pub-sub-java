@@ -21,8 +21,6 @@ class SubscriberImplTest {
 	@Test
 	void testListener() throws InterruptedException {
 		subscriberImpl.listener("test");
-		Thread.sleep(10 * 1000);
-		subscriberImpl.disconnect();
 	}
 
 	@Test
