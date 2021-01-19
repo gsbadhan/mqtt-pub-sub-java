@@ -1,18 +1,24 @@
 package com.mqtt.subscribe;
 
+import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
+
 import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
-import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
+import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
 
 public class SubscriberImpl implements Subscriber {
 
 	private MqttClient client;
+	private String clientId;
+	private CountDownLatch wait = new CountDownLatch(1);
 
-	SubscriberImpl(String serverURI, String clientId) throws MqttException {
-		client = new MqttClient(serverURI, clientId, new MemoryPersistence());
+	SubscriberImpl(String serverURI) throws MqttException {
+		this.clientId = UUID.randomUUID().toString();
+		client = new MqttClient(serverURI, this.clientId, new MqttDefaultFilePersistence());
 		MqttConnectOptions options = new MqttConnectOptions();
 		options.setAutomaticReconnect(true);
 		options.setCleanSession(true);
@@ -21,21 +27,28 @@ public class SubscriberImpl implements Subscriber {
 	}
 
 	@Override
-	public void listener(String[] topics) {
-		try {
-			client.subscribe("", new IMqttMessageListener() {
-				@Override
-				public void messageArrived(String topic, MqttMessage message) throws Exception {
-					System.out.println("incoming data from topic :" + topic + " message :" + message);
-				}
-			});
-		} catch (MqttException e) {
-			e.printStackTrace();
-		}
+	public void listener(String topic) {
+		new Thread(() -> {
+			try {
+				client.subscribe(topic, new IMqttMessageListener() {
+					@Override
+					public void messageArrived(String topic, MqttMessage message) throws Exception {
+						System.out.println(clientId + "-data coming from topic :" + topic + " message :" + message
+								+ " isDuplicate :" + message.isDuplicate());
+					}
+				});
+				System.out.println(clientId + "-listening..");
+				wait.await();
+				System.out.println(clientId + "-listener out..");
+			} catch (MqttException | InterruptedException e) {
+				e.printStackTrace();
+			}
+		}).start();
 	}
 
 	@Override
 	public void disconnect() {
+		wait.countDown();
 		if (client != null)
 			try {
 				client.disconnect();

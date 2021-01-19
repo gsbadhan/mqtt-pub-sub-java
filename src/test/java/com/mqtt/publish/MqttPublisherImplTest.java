@@ -1,5 +1,7 @@
 package com.mqtt.publish;
 
+import java.util.Date;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,7 +22,7 @@ class MqttPublisherImplTest {
 	@Test
 	void testSend() {
 		String topic = "test";
-		byte[] payload = "test message".getBytes();
+		byte[] payload = new StringBuilder().append("test msg ").append(new Date().toString()).toString().getBytes();
 		mqttPublisherImpl.send(topic, payload);
 	}
 

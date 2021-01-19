@@ -5,13 +5,13 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
-import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
+import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
 
 public class MqttPublisherImpl implements Publisher {
 	private MqttClient client;
 
 	MqttPublisherImpl(String serverURI, String clientId) throws MqttException {
-		client = new MqttClient(serverURI, clientId, new MemoryPersistence());
+		client = new MqttClient(serverURI, clientId, new MqttDefaultFilePersistence());
 		MqttConnectOptions options = new MqttConnectOptions();
 		options.setAutomaticReconnect(true);
 		options.setCleanSession(true);
@@ -24,6 +24,7 @@ public class MqttPublisherImpl implements Publisher {
 		MqttMessage msg = new MqttMessage();
 		msg.setPayload(payload);
 		msg.setQos(2);
+		msg.setRetained(true);
 		try {
 			client.publish(topic, msg);
 		} catch (MqttPersistenceException e) {

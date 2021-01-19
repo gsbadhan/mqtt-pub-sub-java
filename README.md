@@ -1,1 +1,1 @@
-# mqtt-pub-sub-java
+# mqtt pub/sub using java
