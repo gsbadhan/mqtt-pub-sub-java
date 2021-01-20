@@ -21,8 +21,11 @@ class MqttPublisherImplTest {
 
 	@Test
 	void testSend() {
-		String topic = "test";
-		byte[] payload = new StringBuilder().append("test msg ").append(new Date().toString()).toString().getBytes();
+		String deviceId = "1001";
+		String topic = "car/engine/temperature/" + deviceId;
+		String value = "20C";
+		byte[] payload = new StringBuilder().append(new Date().getTime()).append(",").append(value).toString()
+				.getBytes();
 		mqttPublisherImpl.send(topic, payload);
 	}
 

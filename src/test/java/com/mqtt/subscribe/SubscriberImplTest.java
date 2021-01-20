@@ -10,7 +10,7 @@ class SubscriberImplTest {
 
 	@BeforeEach
 	void setUp() throws Exception {
-		subscriberImpl = new SubscriberImpl("tcp://localhost:1883");
+		subscriberImpl = new SubscriberImpl("tcp://localhost:1883", null);
 	}
 
 	@AfterEach
@@ -20,7 +20,9 @@ class SubscriberImplTest {
 
 	@Test
 	void testListener() throws InterruptedException {
-		subscriberImpl.listener("test");
+		String deviceId = "#";// listen for all devices
+		String topic = "car/engine/temperature/" + deviceId;
+		subscriberImpl.listener(topic);
 	}
 
 	@Test

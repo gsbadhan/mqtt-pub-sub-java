@@ -9,9 +9,11 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 public class MqttPublisherImpl implements Publisher {
 	private MqttClient client;
+	private String clientId;
 
 	MqttPublisherImpl(String serverURI, String clientId) throws MqttException {
-		client = new MqttClient(serverURI, clientId, new MemoryPersistence());
+		this.clientId = clientId == null ? client.getClientId() : clientId;
+		client = new MqttClient(serverURI, this.clientId, new MemoryPersistence());
 		MqttConnectOptions options = new MqttConnectOptions();
 		options.setAutomaticReconnect(true);
 		options.setCleanSession(true);
