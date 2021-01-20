@@ -12,7 +12,7 @@ public class MqttPublisherImpl implements Publisher {
 	private String clientId;
 
 	MqttPublisherImpl(String serverURI, String clientId) throws MqttException {
-		this.clientId = clientId == null ? client.getClientId() : clientId;
+		this.clientId = clientId == null ? MqttClient.generateClientId() : clientId;
 		client = new MqttClient(serverURI, this.clientId, new MemoryPersistence());
 		MqttConnectOptions options = new MqttConnectOptions();
 		options.setAutomaticReconnect(true);
